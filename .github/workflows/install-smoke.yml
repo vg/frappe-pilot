@@ -33,8 +33,16 @@ jobs:
       matrix:
         image:
           - debian:bookworm
+          - debian:trixie
+          - ubuntu:22.04
           - ubuntu:24.04
-          - fedora:latest
+          - ubuntu:26.04
+          - fedora:40
+          - fedora:41
+          - fedora:42
+          - fedora:43
+          - fedora:44
+          - rockylinux:10
           - archlinux:latest
     steps:
       - uses: actions/checkout@v4
@@ -42,12 +50,37 @@ jobs:
       - name: Run install.sh inside ${{ matrix.image }}
         run: ./scripts/smoke_install.sh "${{ matrix.image }}"
 
-  smoke-macos-14:
+  smoke-arm:
+    needs: shellcheck
+    runs-on: ubuntu-22.04-arm
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - debian:bookworm
+          - debian:trixie
+          - ubuntu:22.04
+          - ubuntu:24.04
+          - ubuntu:26.04
+          - fedora:40
+          - fedora:41
+          - fedora:42
+          - fedora:43
+          - fedora:44
+          - rockylinux:10
+          - archlinux:latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run install.sh inside ${{ matrix.image }}
+        run: ./scripts/smoke_install.sh "${{ matrix.image }}"
+
+  smoke-macos:
     needs: shellcheck
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-14, macos-15, macos-26, macos-15-intel, macos-26-intel]
+        os: [macos-14, macos-15, macos-26]
     steps:
       - uses: actions/checkout@v4
 
