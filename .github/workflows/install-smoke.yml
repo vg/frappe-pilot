@@ -42,9 +42,18 @@ jobs:
       - name: Run install.sh inside ${{ matrix.image }}
         run: ./scripts/smoke_install.sh "${{ matrix.image }}"
 
-  smoke-macos:
+  smoke-macos-14:
     needs: shellcheck
     runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run install.sh on macOS
+        run: ./scripts/smoke_install_macos.sh
+
+  smoke-macos-15:
+    needs: shellcheck
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
 
