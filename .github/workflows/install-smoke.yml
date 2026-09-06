@@ -35,6 +35,8 @@ jobs:
           - almalinux:8
           - almalinux:9
           - almalinux:10
+          - rockylinux:8
+          - rockylinux:9       
           - debian:12
           - debian:13
           - ubuntu:22.04
@@ -62,6 +64,8 @@ jobs:
           - almalinux:8
           - almalinux:9
           - almalinux:10
+          - rockylinux:8
+          - rockylinux:9   
           - debian:12
           - debian:13
           - ubuntu:22.04
@@ -72,7 +76,6 @@ jobs:
           - fedora:42
           - fedora:43
           - fedora:44
-          - archlinux:latest
     steps:
       - uses: actions/checkout@v4
 
