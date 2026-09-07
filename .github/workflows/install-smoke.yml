@@ -35,13 +35,16 @@ jobs:
           - almalinux:8
           - almalinux:9
           - almalinux:10
-          - rockylinux:8
-          - rockylinux:9       
+          - rockylinux/rockylinux:8
+          - rockylinux/rockylinux:9
+          - rockylinux/rockylinux:10
           - debian:12
           - debian:13
+          - debian:sid
           - ubuntu:22.04
           - ubuntu:24.04
           - ubuntu:26.04
+          - ubuntu:26.10
           - fedora:40
           - fedora:41
           - fedora:42
@@ -64,13 +67,16 @@ jobs:
           - almalinux:8
           - almalinux:9
           - almalinux:10
-          - rockylinux:8
-          - rockylinux:9   
+          - rockylinux/rockylinux:8
+          - rockylinux/rockylinux:9
+          - rockylinux/rockylinux:10 
           - debian:12
           - debian:13
+          - debian:sid
           - ubuntu:22.04
           - ubuntu:24.04
           - ubuntu:26.04
+          - ubuntu:26.10
           - fedora:40
           - fedora:41
           - fedora:42
