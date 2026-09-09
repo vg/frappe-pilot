@@ -58,7 +58,7 @@ detect_distro() {
         debian|ubuntu|fedora|arch) echo "$distro_id"; return ;;
     esac
     case "$distro_id" in
-        "rhel"|"almalinux"|"rocky"|"centos") echo "rhel"; return ;;
+        "rhel"|"ol"|"almalinux"|"rocky"|"centos") echo "rhel"; return ;;
     esac
     # Derivatives advertise their parent in ID_LIKE (e.g. Mint -> ubuntu).
     for token in $distro_like; do
@@ -230,11 +230,17 @@ install_database_engines() {
 # enabling the WAF later a non-root operation too.
 install_production_packages() {
     case "$DISTRO" in
-        macos)  pkg_install nginx certbot ;;
+        macos)
+            pkg_install nginx certbot ;;
         debian|ubuntu)
             pkg_install nginx certbot supervisor libnginx-mod-http-modsecurity ;;
-        fedora|rhel) pkg_install nginx certbot supervisor ;;
-        arch)   pkg_install nginx certbot supervisor ;;
+        fedora)
+            pkg_install nginx certbot supervisor ;;
+        rhel)
+            # RHEL, Alma Linux and Rocky Linux require epel repo for certbot and supervisor. 
+            pkg_install nginx epel_release certbot supervisor ;;
+        arch)
+            pkg_install nginx certbot supervisor ;;
     esac
 }
 
