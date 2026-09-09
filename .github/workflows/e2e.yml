@@ -1,10 +1,6 @@
 name: E2E (Admin UI)
 
 on:
-  push:
-    branches: [develop]
-  pull_request:
-    branches: [develop]
   # Heavy (pilot init clones the framework); allow manual runs too.
   workflow_dispatch:
 
