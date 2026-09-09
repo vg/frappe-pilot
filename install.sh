@@ -238,7 +238,9 @@ install_production_packages() {
             pkg_install nginx certbot supervisor ;;
         rhel)
             # RHEL, Alma Linux and Rocky Linux require epel repo for certbot and supervisor. 
-            pkg_install nginx epel-release certbot supervisor ;;
+            pkg_install nginx epel-release
+            pkg_update
+            pkg_install certbot supervisor ;;
         arch)
             pkg_install nginx certbot supervisor ;;
     esac
