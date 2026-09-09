@@ -57,6 +57,9 @@ detect_distro() {
     case "$distro_id" in
         debian|ubuntu|fedora|arch) echo "$distro_id"; return ;;
     esac
+    case "$distro_id" in
+        "rhel"|"almalinux"|"rocky"|"centos") echo "rhel"; return ;;
+    esac
     # Derivatives advertise their parent in ID_LIKE (e.g. Mint -> ubuntu).
     for token in $distro_like; do
         case "$token" in
@@ -99,7 +102,7 @@ run_sudo() {
 pkg_update() {
     case "$DISTRO" in
         macos)  ensure_homebrew; brew update ;;
-        fedora) run_sudo dnf -y makecache ;;
+        fedora|rhel) run_sudo dnf -y makecache ;;
         arch)   run_sudo pacman -Sy --noconfirm --disable-download-timeout ;;
         *)      run_sudo apt-get update ;;
     esac
@@ -109,7 +112,7 @@ pkg_install() {
     case "$DISTRO" in
         macos)  ensure_homebrew; brew install "$@" ;;
         # --allowerasing: containers ship curl-minimal, which conflicts with curl.
-        fedora) run_sudo dnf install -y --allowerasing "$@" ;;
+        fedora|rhel) run_sudo dnf install -y --allowerasing "$@" ;;
         # -Sy: stale Arch mirrors 404 otherwise. The download timeout aborts
         # large transfers on slow links, so turn it off.
         arch)   run_sudo pacman -Sy --noconfirm --needed --disable-download-timeout "$@" ;;
@@ -120,7 +123,7 @@ pkg_install() {
 pkg_installed() {
     case "$DISTRO" in
         macos)  brew list --versions "$1" >/dev/null 2>&1 ;;
-        fedora) rpm -q "$1" >/dev/null 2>&1 ;;
+        fedora|rhel) rpm -q "$1" >/dev/null 2>&1 ;;
         arch)   pacman -Qi "$1" >/dev/null 2>&1 ;;
         *)      dpkg -l "$1" 2>/dev/null | grep -q '^ii' ;;
     esac
@@ -186,7 +189,7 @@ bootstrap_packages() {
             pkg_install git python3 ;;
         debian|ubuntu)
             pkg_install git curl bash sudo ca-certificates python3 python3-dev build-essential tzdata ;;
-        fedora)
+        fedora|rhel)
             pkg_install git curl bash sudo shadow-utils python3 python3-devel gcc gcc-c++ make tzdata ;;
         arch)
             pkg_install git curl bash sudo python base-devel tzdata ;;
@@ -215,7 +218,9 @@ install_database_engines() {
             pkg_install mariadb-server mariadb-client libmariadb-dev postgresql postgresql-client libpq-dev pkg-config redis-server ;;
         fedora)
             # Fedora 41+ ships valkey in place of redis (the alias the runtime resolves).
-            pkg_install mariadb-server mariadb mariadb-connector-c-devel postgresql-server postgresql libpq-devel pkgconf-pkg-config valkey redis ;;
+            pkg_install mariadb-server mariadb mariadb-connector-c-devel postgresql-server postgresql libpq-devel pkgconf-pkg-config valkey ;;
+        rhel)
+            pkg_install mariadb-server mariadb mariadb-connector-c-devel postgresql-server postgresql libpq-devel pkgconf-pkg-config valkey ;;
         arch)
             pkg_install mariadb mariadb-clients mariadb-libs postgresql postgresql-libs pkgconf redis ;;
     esac
@@ -228,7 +233,7 @@ install_production_packages() {
         macos)  pkg_install nginx certbot ;;
         debian|ubuntu)
             pkg_install nginx certbot supervisor libnginx-mod-http-modsecurity ;;
-        fedora) pkg_install nginx certbot supervisor ;;
+        fedora|rhel) pkg_install nginx certbot supervisor ;;
         arch)   pkg_install nginx certbot supervisor ;;
     esac
 }
@@ -244,7 +249,7 @@ install_node() {
     case "$DISTRO" in
         macos)  pkg_install node ;;
         arch)   pkg_install nodejs npm ;;
-        fedora)
+        fedora|rhel)
             fetch_and_run_as_root "https://rpm.nodesource.com/setup_24.x"
             run_sudo dnf install -y nodejs ;;
         *)
@@ -311,7 +316,7 @@ system_packages_present() {
             packages="mariadb@$MARIADB_VERSION postgresql@$POSTGRES_VERSION redis nginx certbot" ;;
         debian|ubuntu)
             packages="mariadb-server mariadb-client libmariadb-dev postgresql postgresql-client libpq-dev pkg-config redis-server nginx certbot supervisor libnginx-mod-http-modsecurity" ;;
-        fedora)
+        fedora|rhel)
             packages="mariadb-server mariadb mariadb-connector-c-devel postgresql-server postgresql libpq-devel pkgconf-pkg-config valkey nginx certbot supervisor" ;;
         arch)
             packages="mariadb mariadb-clients mariadb-libs postgresql postgresql-libs pkgconf redis nginx certbot supervisor" ;;
